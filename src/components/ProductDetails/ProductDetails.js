@@ -1,8 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
+import useAuth from '../../hooks/useAuth';
 import styles from './ProductDetails.module.css';
+import swal from 'sweetalert';
 
 const ProductDetails = () => {
+  const { cart, setCart } = useAuth();
   const { id } = useParams();
   const [product, setproduct] = useState({});
   const selectedProduct = product.data;
@@ -37,9 +40,31 @@ const ProductDetails = () => {
     setquantity(quantity + 1);
     setPrice(selectedProduct.regular_price + price);
   };
+  // const addItem={
+
+  // }
+  const handleAddToCart = () => {
+    const newItem = {
+      ...selectedProduct,
+      finalColor: color,
+      finalQuantity: quantity,
+      finalPrice: price,
+      finalImage: image,
+    };
+    const newCart = [...cart, newItem];
+    setCart(newCart);
+    swal('Congratulations!', 'item has been added to the cart');
+  };
   return (
     <div>
-      {product.data && (
+      {!product.data ? (
+        <div
+          class="spinner-border animate-spin inline-block w-8 h-8 border-4 rounded-full"
+          role="status"
+        >
+          <span class="visually-hidden">Loading...</span>
+        </div>
+      ) : (
         <div className="container mx-auto bg-white rounded p-5">
           <h2 className="text-left py-4 text-xl font-bold text-gray-700">
             {selectedProduct.title}
@@ -99,21 +124,21 @@ const ProductDetails = () => {
                   <div>
                     {/* Product Quantity : <span className="font-bold">0</span>{' '} */}
 
-                    <div class="custom-number-input  gap-3 items-center h-10 w-full flex">
+                    <div className="custom-number-input  gap-3 items-center h-10 w-full flex">
                       <label
                         for="custom-input-number"
-                        class="w-full text-gray-700 text-sm font-semibold "
+                        className="w-full text-gray-700 text-sm font-semibold "
                       >
                         Product Quantity
                       </label>
-                      <div class="flex flex-row items-center h-10   w-24 rounded-lg relative bg-transparent mt-1">
+                      <div className="flex flex-row items-center h-10   w-24 rounded-lg relative bg-transparent mt-1">
                         {quantity > 0 && (
                           <button
                             onClick={handleDecrement}
                             data-action="decrement"
-                            class=" bg-gray-300 line text-gray-600 pb-3 h-7 w-20 rounded-l cursor-pointer outline-none "
+                            className=" bg-gray-300 line text-gray-600 pb-3 h-7 w-20 rounded-l cursor-pointer outline-none "
                           >
-                            <span class="m-auto leading-[1] text-2xl font-bold">
+                            <span className="m-auto leading-[1] text-2xl font-bold">
                               -
                             </span>
                           </button>
@@ -121,16 +146,16 @@ const ProductDetails = () => {
                         <input
                           id="quantity"
                           type="number"
-                          class="outline-none ml-2 focus:outline-none text-center w-full  font-semibold text-md hover:text-black focus:text-black  md:text-basecursor-default flex items-center text-gray-700  outline-none"
+                          className="outline-none ml-2 focus:outline-none text-center w-full  font-semibold text-md hover:text-black focus:text-black  md:text-basecursor-default flex items-center text-gray-700  outline-none"
                           name="custom-input-number"
                           value={quantity}
                         />
                         <button
                           onClick={handleIncrement}
                           data-action="increment"
-                          class="bg-gray-300 text-gray-600 hover:text-gray-700 hover:bg-gray-400 h-7 w-20 rounded-r cursor-pointer"
+                          className="bg-gray-300 text-gray-600 hover:text-gray-700 hover:bg-gray-400 h-7 w-20 rounded-r cursor-pointer"
                         >
-                          <span class="m-auto text-2xl font-bold leading-[1] ">
+                          <span className="m-auto text-2xl font-bold leading-[1] ">
                             +
                           </span>
                         </button>
@@ -155,7 +180,10 @@ const ProductDetails = () => {
                 <button className="bg-amber-300 font-bold px-9 py-3 mx-4 rounded-xl ">
                   Save
                 </button>
-                <button className="bg-amber-300 font-bold px-9 py-3 mx-4 rounded-xl ">
+                <button
+                  onClick={handleAddToCart}
+                  className="bg-amber-300 font-bold px-9 py-3 mx-4 rounded-xl "
+                >
                   Add to Cart
                 </button>
                 <button className="bg-amber-300 font-bold px-9 py-3 mx-4 rounded-xl ">
